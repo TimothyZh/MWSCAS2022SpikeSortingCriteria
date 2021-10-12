@@ -1,3 +1,6 @@
 # ISCAS2022SpikeSortingCriteria
 
-##Raw synthetic extracellular recording is deposited in the datasets folder
+Details for simulation methods and results are analysis can be found at: (Link for paper)
+
+### Instruction for using the code reproduce the results:
+
