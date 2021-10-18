@@ -45,7 +45,8 @@ import time
 # Taken from a ptrblck post on the PyTorch forums. Love that dude.
 class MinMaxScaler(object):
     def __call__(self, tensor):
-        self.scale = 1.0 / (tensor.max(dim=1, keepdim=True)[0] - tensor.min(dim=1, keepdim=True)[0])
+        self.scale = 1.0 / (tensor.max(dim=1, keepdim=True)
+                            [0] - tensor.min(dim=1, keepdim=True)[0])
         self.min = tensor.min(dim=1, keepdim=True)[0]
         tensor.sub_(self.min).mul_(self.scale)
         return tensor
@@ -76,8 +77,12 @@ class crossbar:
         # Crossbar conductance model
         self.method = device_params["method"]
         if (self.method == "linear"):
-            self.g_on = 1 / torch.normal(device_params["r_on"], device_params["r_on_stddev"], size=self.size)
-            self.g_off = 1 / torch.normal(device_params["r_off"], device_params["r_off_stddev"], size=self.size)
+            self.g_on = 1 / \
+                torch.normal(
+                    device_params["r_on"], device_params["r_on_stddev"], size=self.size)
+            self.g_off = 1 / \
+                torch.normal(
+                    device_params["r_off"], device_params["r_off_stddev"], size=self.size)
             # Resolution
             self.resolution = device_params["device_resolution"]
             self.conductance_states = torch.cat(
@@ -86,12 +91,17 @@ class crossbar:
                  for i in range(self.size[0])], dim=0)
 
         elif self.method == "viability":
-            self.g_on = 1 / torch.normal(device_params["r_on"], device_params["r_on_stddev"], size=self.size)
-            self.g_off = 1 / torch.normal(device_params["r_off"], device_params["r_off_stddev"], size=self.size)
+            self.g_on = 1 / \
+                torch.normal(
+                    device_params["r_on"], device_params["r_on_stddev"], size=self.size)
+            self.g_off = 1 / \
+                torch.normal(
+                    device_params["r_off"], device_params["r_off_stddev"], size=self.size)
             self.viability = device_params["viability"]
 
         else:
-            raise ValueError("device_params['method'] must be \"linear\" or \"viability\"")
+            raise ValueError(
+                "device_params['method'] must be \"linear\" or \"viability\"")
 
         self.g_wl = torch.Tensor((1 / device_params["r_wl"],))
         self.g_bl = torch.Tensor((1 / device_params["r_bl"],))
@@ -133,16 +143,20 @@ class crossbar:
 
     # Maps an already scaled matrix to differential weights
     def map(self, matrix):
-        assert not (matrix.size(0) > self.size[0] or matrix.size(1) * 2 > self.size[1]), "input too large"
+        assert not (matrix.size(0) > self.size[0] or matrix.size(
+            1) * 2 > self.size[1]), "input too large"
 
         if (self.method == "linear"):
             midpoint = self.conductance_states.size(2) // 2
             for i in range(matrix.size(0)):
                 for j in range(matrix.size(1)):
-                    shifted = self.conductance_states[i, j] - self.conductance_states[i, j, midpoint]
-                    idx = torch.min(torch.abs(shifted - matrix[i, j]), dim=0)[1]
+                    shifted = self.conductance_states[i, j] - \
+                        self.conductance_states[i, j, midpoint]
+                    idx = torch.min(
+                        torch.abs(shifted - matrix[i, j]), dim=0)[1]
                     self.W[i, 2 * j + 1] = self.conductance_states[i, j, idx]
-                    self.W[i, 2 * j] = self.conductance_states[i, j, midpoint - (idx - midpoint)]
+                    self.W[i, 2 * j] = self.conductance_states[i,
+                                                               j, midpoint - (idx - midpoint)]
 
         elif (self.method == "viability"):
             midpoint = (g_on[i, j] - g_off[i, j]) / 2 + g_off[i, j]
@@ -152,7 +166,8 @@ class crossbar:
                     low_state = midpoint - matrix[i, j] / 2
                     self.W[i, 2 * j + 1] = self.window(
                         high_state + torch.normal(mean=0, std=high_state * self.viability))
-                    self.W[i, 2 * j] = self.window(low_state + torch.normal(mean=0, std=low_state * self.viability))
+                    self.W[i, 2 * j] = self.window(low_state + torch.normal(
+                        mean=0, std=low_state * self.viability))
 
     def solve(self, voltage):
         output = torch.zeros((voltage.size(1), self.size[1]))
@@ -171,7 +186,8 @@ class crossbar:
             M = self.make_M(coords)  # Lazy hash
         else:
             M = self.saved_tiles[str(coords)]
-        Es = torch.cat(tuple(self.make_E(vectors[:, i]).view(-1, 1) for i in range(vectors.size(1))), axis=1)
+        Es = torch.cat(tuple(self.make_E(
+            vectors[:, i]).view(-1, 1) for i in range(vectors.size(1))), axis=1)
         V = torch.transpose(-torch.sub(*torch.chunk(torch.matmul(M, Es), 2, dim=0)), 0, 1).view(-1, self.tile_rows,
                                                                                                 self.tile_cols)
         I = torch.sum(V * self.W[coords], axis=1)
@@ -216,15 +232,18 @@ class crossbar:
 
         A = torch.block_diag(*tuple(torch.diag(g[i, :])
                                     + torch.diag(torch.cat((self.g_wl, self.g_wl * 2 * torch.ones(n - 2), self.g_wl)))
-                                    + torch.diag(self.g_wl * -1 * torch.ones(n - 1), diagonal=1)
-                                    + torch.diag(self.g_wl * -1 * torch.ones(n - 1), diagonal=-1)
+                                    + torch.diag(self.g_wl * -1 *
+                                                 torch.ones(n - 1), diagonal=1)
+                                    + torch.diag(self.g_wl * -1 *
+                                                 torch.ones(n - 1), diagonal=-1)
                                     + torch.diag(
             torch.cat((self.g_s_wl_in[i].view(1), torch.zeros(n - 2), self.g_s_wl_out[i].view(1))))
-                                    for i in range(m)))
+            for i in range(m)))
         B = torch.block_diag(*tuple(-torch.diag(g[i, :]) for i in range(m)))
         C = torch.cat([makec(j) for j in range(n)], dim=0)
         D = torch.cat([maked(j) for j in range(0, n)], dim=0)
-        M = torch.inverse(torch.cat((torch.cat((A, B), dim=1), torch.cat((C, D), dim=1)), dim=0))
+        M = torch.inverse(
+            torch.cat((torch.cat((A, B), dim=1), torch.cat((C, D), dim=1)), dim=0))
 
         self.saved_tiles[str(coords)] = M
 
@@ -239,23 +258,30 @@ class crossbar:
         # Scale matrix
 
         if (self.method == "linear"):
-            mat_scale_factor = torch.max(torch.abs(matrix)) / torch.max(self.g_on) * 2
+            mat_scale_factor = torch.max(
+                torch.abs(matrix)) / torch.max(self.g_on) * 2
             scaled_matrix = matrix / mat_scale_factor
             midpoint = self.conductance_states.size(2) // 2
             for i in range(row, row + scaled_matrix.size(0)):
                 for j in range(col, col + scaled_matrix.size(1)):
-                    shifted = self.conductance_states[i, j] - self.conductance_states[i, j, midpoint]
-                    idx = torch.min(torch.abs(shifted - scaled_matrix[i - row, j - col]), dim=0)[1]
+                    shifted = self.conductance_states[i, j] - \
+                        self.conductance_states[i, j, midpoint]
+                    idx = torch.min(
+                        torch.abs(shifted - scaled_matrix[i - row, j - col]), dim=0)[1]
                     self.W[i, 2 * j + 1] = self.conductance_states[i, j, idx]
-                    self.W[i, 2 * j] = self.conductance_states[i, j, midpoint - (idx - midpoint)]
+                    self.W[i, 2 * j] = self.conductance_states[i,
+                                                               j, midpoint - (idx - midpoint)]
 
         elif (self.method == "viability"):
-            mat_scale_factor = torch.max(torch.abs(matrix)) / (torch.max(self.g_on) - torch.min(self.g_off)) * 2
+            mat_scale_factor = torch.max(
+                torch.abs(matrix)) / (torch.max(self.g_on) - torch.min(self.g_off)) * 2
             scaled_matrix = matrix / mat_scale_factor
             for i in range(row, row + scaled_matrix.size(0)):
                 for j in range(col, col + scaled_matrix.size(1)):
-                    midpoint = (self.g_on[i, j] - self.g_off[i, j]) / 2 + self.g_off[i, j]
-                    right_state = midpoint + scaled_matrix[i - row, j - col] / 2
+                    midpoint = (
+                        self.g_on[i, j] - self.g_off[i, j]) / 2 + self.g_off[i, j]
+                    right_state = midpoint + \
+                        scaled_matrix[i - row, j - col] / 2
                     left_state = midpoint - scaled_matrix[i - row, j - col] / 2
                     self.W[i, 2 * j + 1] = self.clip(
                         right_state + torch.normal(mean=0, std=right_state * self.viability), i, 2 * j + 1)
@@ -285,7 +311,8 @@ class crossbar:
 
     def which_tiles(self, row, col, m_row, m_col):
         return itertools.product(range(row // self.tile_rows, (row + m_row) // self.tile_rows + 1),
-                                 range(col // self.tile_cols, (col + m_col) // self.tile_cols + 1),
+                                 range(col // self.tile_cols,
+                                       (col + m_col) // self.tile_cols + 1),
                                  )
 
     def find_space(self, m_row, m_col):
@@ -321,9 +348,11 @@ class ticket2:
 
         # decompose vector by bit
         bit_vector = torch.zeros(vector.size(0), v_bits)
-        bin2s = lambda x: "".join(reversed([str((int(x) >> i) & 1) for i in range(v_bits)]))
+        def bin2s(x): return "".join(
+            reversed([str((int(x) >> i) & 1) for i in range(v_bits)]))
         for j in range(vector.size(0)):
-            bit_vector[j, :] = torch.Tensor([float(i) for i in list(bin2s(vector[j]))])
+            bit_vector[j, :] = torch.Tensor(
+                [float(i) for i in list(bin2s(vector[j]))])
         bit_vector *= self.crossbar.V
 
         # Pad bit vector with unselected voltages
@@ -339,26 +368,30 @@ class ticket2:
         crossbar = self.crossbar
 
         # Rescale vector and convert to bits.
-        pad_vector, vect_scale_factor, vect_min = self.prep_vector(vector, v_bits)
+        pad_vector, vect_scale_factor, vect_min = self.prep_vector(
+            vector, v_bits)
 
         # Solve crossbar circuit
         output = crossbar.solve(pad_vector)
 
         # Get relevant output columns and add binary outputs
 
-        output = output.view(v_bits, -1, 2)[:, :, 0] - output.view(v_bits, -1, 2)[:, :, 1]
+        output = output.view(
+            v_bits, -1, 2)[:, :, 0] - output.view(v_bits, -1, 2)[:, :, 1]
 
         for i in range(output.size(0)):
             output[i] *= 2 ** (v_bits - i - 1)
         output = torch.sum(output, axis=0)[self.col:self.col + self.m_cols]
 
         # Rescale output
-        magic_number = 1  # can use to compensate for resistive losses in the lines. Recommend multiplying a bunch of 8x8 integer matrices to find this.
+        # can use to compensate for resistive losses in the lines. Recommend multiplying a bunch of 8x8 integer matrices to find this.
+        magic_number = 1
 
         output = (output / crossbar.V * vect_scale_factor * self.mat_scale_factor) / magic_number + torch.sum(
             vect_min * self.matrix, axis=0)
 
         return output.view(-1, 1)
+
 
 '''
 device_params = {"Vdd": 1.8,
@@ -405,6 +438,8 @@ device_params = {"Vdd": 1.8,
                  }
 '''
 # Utility function, should be moved
+
+
 def print_mapping(tensors, mapping, crossbar_size):
     cb = torch.zeros(*crossbar_size)
     for t, m in zip(tensors, mapping):
@@ -416,8 +451,7 @@ def print_mapping(tensors, mapping, crossbar_size):
         print(val[0], val[1], val[2], sep=", ")
 
 
-
-###setting device parameter
+# setting device parameter
 device_params = {"Vdd": 0.2,
                  "r_wl": 20.0,
                  "r_bl": 20.0,
@@ -427,7 +461,7 @@ device_params = {"Vdd": 0.2,
                  "r_off": 1e5,
                  "dac_resolution": 4,
                  "adc_resolution": 14,
-                 "bias_scheme": 1/3,
+                 "bias_scheme": 1 / 3,
                  "tile_rows": 8,
                  "tile_cols": 8,
                  "r_cmos_line": 600,
@@ -438,7 +472,7 @@ device_params = {"Vdd": 0.2,
                  "p_stuck_off": 0.01,
                  "method": "viability",
                  "viability": 0.05,
-}
+                 }
 
 cb = crossbar(device_params)
 
@@ -449,169 +483,171 @@ np.random.seed(seed)
 torch.manual_seed(seed)
 
 ###
+
+
 def vmmdot(matrix, vector):
-  matrix=torch.tensor(matrix)
-  vector=torch.tensor(vector)
-  cb.clear()
-  ticket = cb.register_linear(torch.transpose(matrix,0,1))
-  output = ticket.vmm(vector, v_bits=4)
-  result=matrix.matmul(vector)
-  result=np.array(result)
-  return result
+    matrix = torch.tensor(matrix)
+    vector = torch.tensor(vector)
+    cb.clear()
+    ticket = cb.register_linear(torch.transpose(matrix, 0, 1))
+    output = ticket.vmm(vector, v_bits=4)
+    result = matrix.matmul(vector)
+    result = np.array(result)
+    return result
+
 
 """Loading Dataset 
 
 """
 
-from google.colab import drive
-drive.mount('/content/drive')
-
+# from google.colab import drive
+# drive.mount('/content/drive')
 
 
 from scipy.io import loadmat
-#addpath(fullfile('Desktop'));
-raw_data=loadmat('/content/drive/My Drive/SURE2021/GTaligned1.mat')
-#print(raw_data))
-GTaligned=np.array(raw_data['GTaligned'])
-
+# addpath(fullfile('Desktop'));
+# raw_data=loadmat('/content/drive/My Drive/SURE2021/GTaligned1.mat')
+raw_data = loadmat('Extracted Spikes/GTthrAligned1.mat')
+# print(raw_data)
+GTaligned = np.array(raw_data['GTthrAligned'])
 
 
 print(GTaligned.shape)
 
-spike=GTaligned
+spike = GTaligned
 
-length=GTaligned.shape[0]
+length = GTaligned.shape[0]
 print(length)
 
 """Iteration 1"""
 
-A1=np.zeros((16,32)) #lowpass
-B1=np.zeros((16,32)) #highpass
+A1 = np.zeros((16, 32))  # lowpass
+B1 = np.zeros((16, 32))  # highpass
 
-#record high passed version 
-H1=np.zeros((length,16)) #change matrix size based on number of samples 
-L1=np.zeros((length,16))
-for i in range (16):
-  A1[i,2*i]=1
-  A1[i,2*i+1]=1
-  B1[i,2*i]=1
-  B1[i,2*i+1]=-1
+# record high passed version
+H1 = np.zeros((length, 16))  # change matrix size based on number of samples
+L1 = np.zeros((length, 16))
+for i in range(16):
+    A1[i, 2 * i] = 1
+    A1[i, 2 * i + 1] = 1
+    B1[i, 2 * i] = 1
+    B1[i, 2 * i + 1] = -1
 
-A1=(1/2)*A1
-B1=(1/2)*B1
+A1 = (1 / 2) * A1
+B1 = (1 / 2) * B1
 
-for i in range (length):
-  t=np.array([spike[i,:]])
-  t=np.transpose(t)
-  y0=vmmdot(A1,t)
+for i in range(length):
+    t = np.array([spike[i, :]])
+    t = np.transpose(t)
+    y0 = vmmdot(A1, t)
 
-  L1[i,:]=np.squeeze(y0)
-  y1=vmmdot(B1,t)
-  H1[i,:]=np.squeeze(y1)
+    L1[i, :] = np.squeeze(y0)
+    y1 = vmmdot(B1, t)
+    H1[i, :] = np.squeeze(y1)
 
 """Iteration *2*"""
 
-A2=np.zeros((8,16)) #lowpass
-B2=np.zeros((8,16)) #highpass
+A2 = np.zeros((8, 16))  # lowpass
+B2 = np.zeros((8, 16))  # highpass
 
-#record high passed version 
-H2=np.zeros((length,8))
-L2=np.zeros((length,8))
-for i in range (8):
-  A2[i,2*i]=1
-  A2[i,2*i+1]=1
-  B2[i,2*i]=1
-  B2[i,2*i+1]=-1
+# record high passed version
+H2 = np.zeros((length, 8))
+L2 = np.zeros((length, 8))
+for i in range(8):
+    A2[i, 2 * i] = 1
+    A2[i, 2 * i + 1] = 1
+    B2[i, 2 * i] = 1
+    B2[i, 2 * i + 1] = -1
 
-A2=(1/2)*A2
-B2=(1/2)*B2
+A2 = (1 / 2) * A2
+B2 = (1 / 2) * B2
 
-for i in range (length):
-  t=np.array([L1[i,:]])
-  t=np.transpose(t)
-  y0=vmmdot(A2,t)
-  L2[i,:]=np.squeeze(y0)
-  y1=vmmdot(B2,t)
-  H2[i,:]=np.squeeze(y1)
+for i in range(length):
+    t = np.array([L1[i, :]])
+    t = np.transpose(t)
+    y0 = vmmdot(A2, t)
+    L2[i, :] = np.squeeze(y0)
+    y1 = vmmdot(B2, t)
+    H2[i, :] = np.squeeze(y1)
 
 """iteration 3"""
 
-A3=np.zeros((4,8)) #lowpass
-B3=np.zeros((4,8)) #highpass
+A3 = np.zeros((4, 8))  # lowpass
+B3 = np.zeros((4, 8))  # highpass
 
-#record high passed version 
-H3=np.zeros((length,4))
-L3=np.zeros((length,4))
-for i in range (4):
-  A3[i,2*i]=1
-  A3[i,2*i+1]=1
-  B3[i,2*i]=1
-  B3[i,2*i+1]=-1
+# record high passed version
+H3 = np.zeros((length, 4))
+L3 = np.zeros((length, 4))
+for i in range(4):
+    A3[i, 2 * i] = 1
+    A3[i, 2 * i + 1] = 1
+    B3[i, 2 * i] = 1
+    B3[i, 2 * i + 1] = -1
 
-A3=(1/2)*A3
-B3=(1/2)*B3
+A3 = (1 / 2) * A3
+B3 = (1 / 2) * B3
 
-for i in range (length):
-  t=np.array([L2[i,:]])
-  t=np.transpose(t)
-  y0=vmmdot(A3,t)
-  L3[i,:]=np.squeeze(y0)
-  y1=vmmdot(B3,t)
-  H3[i,:]=np.squeeze(y1)
+for i in range(length):
+    t = np.array([L2[i, :]])
+    t = np.transpose(t)
+    y0 = vmmdot(A3, t)
+    L3[i, :] = np.squeeze(y0)
+    y1 = vmmdot(B3, t)
+    H3[i, :] = np.squeeze(y1)
 
 """Iteration 4"""
 
-A4=np.zeros((2,4)) #lowpass
-B4=np.zeros((2,4)) #highpass
+A4 = np.zeros((2, 4))  # lowpass
+B4 = np.zeros((2, 4))  # highpass
 
-#record high passed version 
-H4=np.zeros((length,2))
-L4=np.zeros((length,2))
-for i in range (2):
-  A4[i,2*i]=1
-  A4[i,2*i+1]=1
-  B4[i,2*i]=1
-  B4[i,2*i+1]=-1
+# record high passed version
+H4 = np.zeros((length, 2))
+L4 = np.zeros((length, 2))
+for i in range(2):
+    A4[i, 2 * i] = 1
+    A4[i, 2 * i + 1] = 1
+    B4[i, 2 * i] = 1
+    B4[i, 2 * i + 1] = -1
 
-A4=(1/2)*A4
-B4=(1/2)*B4
+A4 = (1 / 2) * A4
+B4 = (1 / 2) * B4
 
-for i in range (length):
-  t=np.array([L3[i,:]])
-  t=np.transpose(t)
-  y0=vmmdot(A4,t)
-  L4[i,:]=np.squeeze(y0)
-  y1=vmmdot(B4,t)
-  H4[i,:]=np.squeeze(y1)
+for i in range(length):
+    t = np.array([L3[i, :]])
+    t = np.transpose(t)
+    y0 = vmmdot(A4, t)
+    L4[i, :] = np.squeeze(y0)
+    y1 = vmmdot(B4, t)
+    H4[i, :] = np.squeeze(y1)
 
 """Iteration 5"""
 
-A5=np.zeros((1,2)) #lowpass
-B5=np.zeros((1,2)) #highpass
+A5 = np.zeros((1, 2))  # lowpass
+B5 = np.zeros((1, 2))  # highpass
 
-#record high passed version 
-H5=np.zeros((length,1))
-L5=np.zeros((length,1))
-for i in range (1):
-  A5[i,2*i]=1
-  A5[i,2*i+1]=1
-  B5[i,2*i]=1
-  B5[i,2*i+1]=-1
+# record high passed version
+H5 = np.zeros((length, 1))
+L5 = np.zeros((length, 1))
+for i in range(1):
+    A5[i, 2 * i] = 1
+    A5[i, 2 * i + 1] = 1
+    B5[i, 2 * i] = 1
+    B5[i, 2 * i + 1] = -1
 
-A5=(1/2)*A5
-B5=(1/2)*B5
+A5 = (1 / 2) * A5
+B5 = (1 / 2) * B5
 
-for i in range (length):
-  t=np.array([L4[i,:]])
-  t=np.transpose(t)
-  y0=vmmdot(A5,t)
-  L5[i,:]=np.squeeze(y0)
-  y1=vmmdot(B5,t)
-  H5[i,:]=np.squeeze(y1)
+for i in range(length):
+    t = np.array([L4[i, :]])
+    t = np.transpose(t)
+    y0 = vmmdot(A5, t)
+    L5[i, :] = np.squeeze(y0)
+    y1 = vmmdot(B5, t)
+    H5[i, :] = np.squeeze(y1)
 
-#required size 897x32
+# required size 897x32
 
-wavespike=np.concatenate((L5,H5,H4,H3,H2,H1),axis=1)
+wavespike = np.concatenate((L5, H5, H4, H3, H2, H1), axis=1)
 print(wavespike.shape)
 
 """K means 
@@ -619,24 +655,24 @@ print(wavespike.shape)
 """
 
 from sklearn.cluster import KMeans
-pc=[]
-pc1=np.array([waveMatrix[:,9]])
-pc2=np.array([waveMatrix[:,21]])
-PC=np.concatenate((pc1,pc2),axis=0)
-PC=np.transpose(PC)
+pc = []
+pc1 = np.array([waveMatrix[:, 9]])
+pc2 = np.array([waveMatrix[:, 21]])
+PC = np.concatenate((pc1, pc2), axis=0)
+PC = np.transpose(PC)
 print(PC.shape)
-kmeans = KMeans(n_clusters=3, max_iter=1000).fit(PC) #random_state=0,
+kmeans = KMeans(n_clusters=3, max_iter=1000).fit(PC)  # random_state=0,
 
-group=kmeans.labels_
+group = kmeans.labels_
 
-pc11=waveMatrix[:,9]
-pc22=waveMatrix[:,21]
-cdict = {0: 'red', 1: 'blue',2:'green'}
+pc11 = waveMatrix[:, 9]
+pc22 = waveMatrix[:, 21]
+cdict = {0: 'red', 1: 'blue', 2: 'green'}
 fig, ax = plt.subplots()
 for g in np.unique(group):
     ix = np.where(group == g)
-    ax.scatter(pc11[ix], pc22[ix], c = cdict[g], label = g, s = 10)
+    ax.scatter(pc11[ix], pc22[ix], c=cdict[g], label=g, s=10)
 ax.legend()
 plt.show()
 
-Features=PC
+Features = PC
