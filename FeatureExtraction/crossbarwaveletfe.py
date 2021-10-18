@@ -520,6 +520,7 @@ length = GTaligned.shape[0]
 print(length)
 
 """Iteration 1"""
+print('Interation 1')
 
 A1 = np.zeros((16, 32))  # lowpass
 B1 = np.zeros((16, 32))  # highpass
@@ -546,6 +547,7 @@ for i in range(length):
     H1[i, :] = np.squeeze(y1)
 
 """Iteration *2*"""
+print('Interation 2')
 
 A2 = np.zeros((8, 16))  # lowpass
 B2 = np.zeros((8, 16))  # highpass
@@ -571,6 +573,7 @@ for i in range(length):
     H2[i, :] = np.squeeze(y1)
 
 """iteration 3"""
+print('Interation 3')
 
 A3 = np.zeros((4, 8))  # lowpass
 B3 = np.zeros((4, 8))  # highpass
@@ -596,6 +599,7 @@ for i in range(length):
     H3[i, :] = np.squeeze(y1)
 
 """Iteration 4"""
+print('Interation 4')
 
 A4 = np.zeros((2, 4))  # lowpass
 B4 = np.zeros((2, 4))  # highpass
@@ -621,6 +625,7 @@ for i in range(length):
     H4[i, :] = np.squeeze(y1)
 
 """Iteration 5"""
+print('Interation 5')
 
 A5 = np.zeros((1, 2))  # lowpass
 B5 = np.zeros((1, 2))  # highpass
@@ -651,8 +656,8 @@ wavespike = np.concatenate((L5, H5, H4, H3, H2, H1), axis=1)
 print(wavespike.shape)
 
 """K means 
-
 """
+print('KMeans')
 
 from sklearn.cluster import KMeans
 pc = []
