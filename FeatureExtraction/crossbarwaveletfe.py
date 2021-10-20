@@ -393,64 +393,6 @@ class ticket2:
         return output.view(-1, 1)
 
 
-'''
-device_params = {"Vdd": 1.8,
-                 "r_wl": 20,
-                 "r_bl": 20,
-                 "m": 16,
-                 "n": 16,
-                 "r_on": 1e4,
-                 "r_off": 1e5,
-                 "dac_resolution": 4,
-                 "adc_resolution": 14,
-                 "bias_scheme": 1 / 3,
-                 "tile_rows": 4,
-                 "tile_cols": 4,
-                 "r_cmos_line": 600,
-                 "r_cmos_transistor": 20,
-                 "r_on_stddev": 1e3,
-                 "r_off_stddev": 1e4,
-                 "p_stuck_on": 0.01,
-                 "p_stuck_off": 0.01,
-                 "method": "viability",
-                 "viability": 0.05,
-                 }
-device_params = {"Vdd": 1.8,
-                 "r_wl": 20,
-                 "r_bl": 20,
-                 "m": 16,
-                 "n": 16,
-                 "r_on": 1e4,
-                 "r_off": 1e5,
-                 "dac_resolution": 4,
-                 "adc_resolution": 14,
-                 "bias_scheme": 1 / 3,
-                 "tile_rows": 4,
-                 "tile_cols": 4,
-                 "r_cmos_line": 600,
-                 "r_cmos_transistor": 20,
-                 "p_stuck_on": 0.01,
-                 "p_stuck_off": 0.01,
-                 "r_on_stddev": 1e3,
-                 "r_off_stddev": 1e4,
-                 "device_resolution": 4,
-                 "method": "linear",
-                 }
-'''
-# Utility function, should be moved
-
-
-def print_mapping(tensors, mapping, crossbar_size):
-    cb = torch.zeros(*crossbar_size)
-    for t, m in zip(tensors, mapping):
-        cb[m[0]:m[0] + m[2], m[1]:m[1] + m[3]] = t
-    rows = torch.nonzero(cb, as_tuple=True)[0].tolist()
-    cols = torch.nonzero(cb, as_tuple=True)[1].tolist()
-    values = cb[torch.nonzero(cb, as_tuple=True)].tolist()
-    for val in zip(rows, cols, values):
-        print(val[0], val[1], val[2], sep=", ")
-
-
 # setting device parameter
 device_params = {"Vdd": 0.2,
                  "r_wl": 20.0,
@@ -482,8 +424,6 @@ os.environ['PYTHONHASHSEED'] = str(seed)
 np.random.seed(seed)
 torch.manual_seed(seed)
 
-###
-
 
 def vmmdot(matrix, vector):
     matrix = torch.tensor(matrix)
@@ -496,6 +436,12 @@ def vmmdot(matrix, vector):
     return result
 
 
+a = torch.ones((10, 10)) * 0.1
+b = torch.zeros((10, 1)).uniform_(0, 1)
+out = vmmdot(a, b)
+print((a * b).sum(axis=0))
+print(out)
+exit(0)
 """Loading Dataset 
 
 """
