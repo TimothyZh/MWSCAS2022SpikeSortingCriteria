@@ -26,7 +26,6 @@ tiles[0, 0:8, 32:48] = 1  # Iteration 2
 tiles[0, 0:4, 48:56] = 1  # Iteration 3
 tiles[0, 0:2, 56:60] = 1  # Iteration 4
 tiles[0, 0:1, 60:62] = 1  # Iteration 5
-print(sum(sum(sum(tiles))))
 df = pd.DataFrame(
     columns=[
         "Implementation",
@@ -53,7 +52,8 @@ for tile_idx, tile_ in enumerate(tiles_):
         R_line,
     )
 
-crossbar_power = np.sum(np.divide(np.power(V_applied, 2), tiles_)) / tiles.shape[0]
+crossbar_power = np.sum(
+    np.divide(np.power(V_applied, 2), tiles_)) / tiles.shape[0]
 peripheral_power = ADC_power * tiles.shape[0]
 total_power = crossbar_power + peripheral_power
 crossbar_area = tiles.size * RRAM_cell_area
