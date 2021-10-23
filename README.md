@@ -13,8 +13,19 @@ Feature extraction folder includes the code of integer filter feature extraction
 Classification and accuracy testing folder includes the Classification_Accuracy.py file which performs K-means clustering followed by accuracy evaluation which outputs the number of correctly sorted spikes vs. number of incorrectly sorted spikes. ICV.py calculates the ICV values for each cluster. The "group" variable in ICV.py refers to the output of K-means classifier in the form of a numpy array. 
 
 
-## Memristor Crossbar Accuracy Simulation 
-
-
-## Memristor Crossbar Power and Area Simulation
-
+## Memristor Crossbar Accuracy, Power and Area Simulation 
+This study uses a semi-passive crossbar model proposed by Primeau et al. 2021[28], which is based on existing semi-passive crossbar models [26], [29]. This model accounts for a variety of device non-idealities. The parameters for simulations are as follows: 
+- Wordline(WL) resistance: 20Ω
+- Bitline(BL) resistance: 20Ω
+- Size of crossbar: 64 by 64
+- Size of tile: 8 by 8 
+- Voltage Supplied (Vdd): 0.2V
+- DAC resolution: 4 bits
+- ADC resolution: 14 bits 
+- CMOS line resistance: 600Ω
+- CMOS transistor resistance: 20Ω
+- R_on (High resistive state): 1e4 
+- R_off (Low resistive state): 1e5 
+- Bias Scheme: 1/3 bias scheme (unselected WLs biased to Vdd/3, unselected BLs biased to 2Vdd/3)
+- Probability of memristor stuck on High resistive state: 0.01
+- Probability of memristor stuck on Low resistive state: 0.01
