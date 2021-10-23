@@ -436,12 +436,7 @@ def vmmdot(matrix, vector):
     return result
 
 
-a = torch.ones((10, 10)) * 0.1
-b = torch.zeros((10, 1)).uniform_(0, 1)
-out = vmmdot(a, b)
-print((a * b).sum(axis=0))
-print(out)
-exit(0)
+crossbars = 0
 """Loading Dataset 
 
 """
@@ -464,7 +459,10 @@ spike = GTaligned
 
 length = GTaligned.shape[0]
 print(length)
+print(GTaligned.shape)
+exit(0)
 
+# exit(0)
 """Iteration 1"""
 print('Interation 1')
 
@@ -486,12 +484,15 @@ B1 = (1 / 2) * B1
 for i in range(length):
     t = np.array([spike[i, :]])
     t = np.transpose(t)
+    print(A1.shape, t.shape)
+    exit(0)
     y0 = vmmdot(A1, t)
 
     L1[i, :] = np.squeeze(y0)
     y1 = vmmdot(B1, t)
     H1[i, :] = np.squeeze(y1)
 
+# exit(0)
 """Iteration *2*"""
 print('Interation 2')
 

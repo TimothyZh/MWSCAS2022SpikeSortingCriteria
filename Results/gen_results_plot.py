@@ -96,15 +96,16 @@ ax[1].xaxis.grid(True, which='both')
 ax[1].set_axisbelow(True)
 
 noise = pd.read_csv('noise.csv')
+noise_levels = [4, 3, 2]
 df = pd.DataFrame(columns=['Method', 'Noise (dB)', 'Accuracy (%)'])
 for idx, row in noise.iterrows():
     for i in range(1, 4):
-        df = df.append({'Method': row['Method'], 'Noise (dB)': i,
+        df = df.append({'Method': row['Method'], 'SNR': noise_levels[i - 1],
                        'Accuracy (%)': row['Noise Level %i' % i] * 100}, ignore_index=True)
 
 df.loc[df['Method'] == 'wavelet', 'Method'] = 'Wavelet'
 df.loc[df['Method'] == 'int_filter', 'Method'] = 'Integer Filter'
-sns.lineplot(data=df, x='Noise (dB)', y='Accuracy (%)',
+sns.lineplot(data=df, x='SNR', y='Accuracy (%)',
              hue='Method', style='Method', linewidth=2, markers=True, dashes=False, ms=25, palette=color_palette, ax=ax[2])
 ax[2].set_ylim([80, 101])
 ax[2].grid(axis='both')

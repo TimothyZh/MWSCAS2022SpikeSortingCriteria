@@ -1,0 +1,2 @@
+,Implementation,Scenario,Power (mW),Area (mm2),Latency (us),Energy (uJ),EDP (uJ * s)
+0,TDM,(R_ON + R_OFF) / 2,10.721201735996628,0.6600409600000001,135526.912,1453.0113642086624,196.92214329210734
