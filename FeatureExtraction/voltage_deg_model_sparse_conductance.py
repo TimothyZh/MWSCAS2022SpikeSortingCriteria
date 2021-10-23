@@ -16,10 +16,10 @@ def voltage_deg_model_sparse_conductance(G_mem, V_app_WL1, V_app_BL2, R_source, 
         row_index = col_index
         indices[0, index] = row_index
         indices[1, index] = col_index
-        if (j == 0):
+        if j == 0:
             values[index] = G_mem[i, j] + 1 / R_source + 1 / R_line
         else:
-            if (j == n - 1):
+            if j == n - 1:
                 values[index] = G_mem[i, j] + 1 / R_line
             else:
                 indices[0, index] = row_index
@@ -27,7 +27,7 @@ def voltage_deg_model_sparse_conductance(G_mem, V_app_WL1, V_app_BL2, R_source, 
                 values[index] = G_mem[i, j] + 2 / R_line
 
         index += 1
-        if (j < n - 1):
+        if j < n - 1:
             indices[0, index] = row_index + 1
             indices[1, index] = col_index
             values[index] = -1 / R_line
@@ -38,7 +38,7 @@ def voltage_deg_model_sparse_conductance(G_mem, V_app_WL1, V_app_BL2, R_source, 
             index += 1
 
         j += 1
-        if (j > n - 1):
+        if j > n - 1:
             j = 0
             i += 1
 
@@ -52,7 +52,7 @@ def voltage_deg_model_sparse_conductance(G_mem, V_app_WL1, V_app_BL2, R_source, 
         values[index] = -G_mem[i, j]
         index += 1
         j += 1
-        if (j > n - 1):
+        if j > n - 1:
             j = 0
             i += 1
 
@@ -66,7 +66,7 @@ def voltage_deg_model_sparse_conductance(G_mem, V_app_WL1, V_app_BL2, R_source, 
         values[index] = G_mem[i, j]
         index += 1
         i += 1
-        if (i > m - 1):
+        if i > m - 1:
             i = 0
             j += 1
 
@@ -74,7 +74,7 @@ def voltage_deg_model_sparse_conductance(G_mem, V_app_WL1, V_app_BL2, R_source, 
     i = 0
     j = 0
     for row_index in range(m * n):
-        if (i == 0):
+        if i == 0:
             col_index = j
             indices[0, index] = m * n + row_index
             indices[1, index] = m * n + col_index
@@ -85,7 +85,7 @@ def voltage_deg_model_sparse_conductance(G_mem, V_app_WL1, V_app_BL2, R_source, 
             indices[1, index] = m * n + col_index
             values[index] = 1 / R_line
             index += 1
-        elif (i == m - 1):
+        elif i == m - 1:
             col_index = (n * (i - 1)) + j
             indices[0, index] = m * n + row_index
             indices[1, index] = m * n + col_index
@@ -114,12 +114,13 @@ def voltage_deg_model_sparse_conductance(G_mem, V_app_WL1, V_app_BL2, R_source, 
             index += 1
 
         i += 1
-        if (i > m - 1):
+        if i > m - 1:
             i = 0
             j += 1
 
     ABCD_matrix = torch.sparse_coo_tensor(
-        indices=indices, values=values, size=(2 * m * n, 2 * m * n))
+        indices=indices, values=values, size=(2 * m * n, 2 * m * n)
+    )
 
     # E matrix
     indices = torch.zeros(2, m + n)
@@ -138,7 +139,8 @@ def voltage_deg_model_sparse_conductance(G_mem, V_app_WL1, V_app_BL2, R_source, 
         index += 1
 
     E_matrix = torch.sparse_coo_tensor(
-        indices=indices, values=values, size=(2 * m * n, 1))
+        indices=indices, values=values, size=(2 * m * n, 1)
+    )
     V = torch.linalg.solve(ABCD_matrix.to_dense(), E_matrix.to_dense())
     V_applied = torch.zeros((m, n))
     for i in range(m):
@@ -156,5 +158,4 @@ if __name__ == "__main__":
     V_app_BL2 = torch.ones(n, 1) * 3
     R_source = 1e5
     R_line = 5
-    voltage_deg_model_sparse_conductance(
-        G_mem, V_app_WL1, V_app_BL2, R_source, R_line)
+    voltage_deg_model_sparse_conductance(G_mem, V_app_WL1, V_app_BL2, R_source, R_line)
