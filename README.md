@@ -14,7 +14,8 @@ Classification and accuracy testing folder includes the Classification_Accuracy.
 
 
 ## Memristor Crossbar Accuracy, Power and Area Simulation 
-This study uses a semi-passive crossbar model proposed by Primeau et al. 2021[28], which is based on existing semi-passive crossbar models [26], [29]. This model accounts for a variety of device non-idealities. The parameters for simulations are as follows: 
+This study uses a semi-passive crossbar model proposed by Primeau et al. 2021[28], which is based on existing semi-passive crossbar models [26], [29]. This model accounts for a variety of device non-idealities.
+The parameters for accuracy simulations are as follows: 
 - Wordline(WL) resistance: 20Ω
 - Bitline(BL) resistance: 20Ω
 - Size of crossbar: 64 by 64
@@ -29,3 +30,15 @@ This study uses a semi-passive crossbar model proposed by Primeau et al. 2021[28
 - Bias Scheme: 1/3 bias scheme (unselected WLs biased to Vdd/3, unselected BLs biased to 2Vdd/3)
 - Probability of memristor stuck on High resistive state: 0.01
 - Probability of memristor stuck on Low resistive state: 0.01
+
+The parameters for power consumption simulation:
+- RRAM cell area: 1e-14
+- RRAM cell read voltage: 0.2V
+- RRAM cell read latency: 6e-9s 
+- DAC area: 0.05e-6
+- DAC power: 2e-4W
+- DAC frequency: 100e6 Hz
+- ADC area: 1.1e-3 by 0.6e-3
+- ADC power: 10e-3W
+- ADC frequency: 10e6 Hz
+
