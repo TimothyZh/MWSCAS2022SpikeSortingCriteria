@@ -1,9 +1,7 @@
-# ISCAS2022SpikeSortingCriteria
-
-Details for simulation methods and results are analysis can be found at: (Link for paper)
+# Toward A Streamlined Approach for Spike Sorting Algorithms and Hardware Evaluation
+Spike sorting algorithms are used to separate extracellular recordings of neuronal populations into single-unit spike activities. The development of customized hardware implementations implementing spike sorting algorithms is burgeoning, however, there lacks a standardized set of criteria for evaluation to facilitate direct comparison of both software and hardware implementations in the literature. This can be largely attributed to the lack of publicly available labelled datasets. In this paper, we propose a standardized set of criteria for evaluating spikesorting algorithms and processors, using five publicly available datasets. We present a benchmark for future comparison, and use our criteria to evaluate a simulated Resistive Random-Access Memory (RRAM) In-Memory Computing (IMC) system using the Discrete Wavelet Transform (DWT) for feature extraction. Our system consumes approximately (per channel) 10.72mW and occupies an area of 0.66mm2 in a 22nm FDSOI Complementary Metal–Oxide–Semiconductor (CMOS) process.
 
 ## Instruction for using the code reproduce the results:
-
 Dataset folder includes the 5 sets of synthetic raw extracellular recordings in .mat data format. 
 
 Spike detection folder includes AmpThrDet which performs amplitude threshold detection on raw signal. To compare the performance of various feature extraction algorithms, the folder also includes the DetThrGT which matches the detected spikes with the ground truth (GT) labels. Only detected spikes are only kept if it corresponds with a ground truth label are kept and false positives are removed. This is to ensure the spike sorting accuracy can be determined fairly using ground truth labels across various algorithms and confounding variables are minimized. ThrDetMaxAmpAlign.mlx and ThrDetMaxDeriAlign.mlx operate similarly to ThrDetGT, except they also perform spike alignment at the maximum amplitude and maximum derivative, respectively.
