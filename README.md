@@ -15,8 +15,8 @@ Classification and accuracy testing folder includes the `Classification_Accuracy
 This study uses a semi-passive crossbar model proposed by Primeau et al. 2021 [28], which is based on existing semi-passive crossbar models [26], [29]. This model accounts for a variety of device non-idealities.
 
 The parameters used for accuracy simulations are as follows: 
-- Wordline(WL) resistance: 20Ω
-- Bitline(BL) resistance: 20Ω
+- Wordline (WL) resistance: 20Ω
+- Bitline (BL) resistance: 20Ω
 - Size of crossbar: 64 by 64
 - Size of tile: 8 by 8 
 - Voltage Supplied (Vdd): 0.2V
@@ -41,3 +41,8 @@ The parameters used for power consumption simulations are as follows:
 - ADC power: 10e-3W
 - ADC frequency: 10e6 Hz
 
+[26] C. Lammie, W. Xiang, B. Linares-Barranco, and M. R. Azghadi, “Memtorch: An Open-Source Simulation Framework for Memristive Deep Learning Systems,” CoRR, vol. abs/2004.10971, 2020. [Online]. Available: https://arxiv.org/abs/2004.10971
+
+[28] A. Amirsoleimani, “CODEX: Stochastic Encoding Method to Relax Resistive Crossbar Accelerator Design Requirements,” 2021.
+
+[29] A. Chen, “A Comprehensive Crossbar Array Model With Solutions for Line Resistance and Nonlinear Device Characteristics,” IEEE Transactions on Electron Devices, vol. 60, no. 4, pp. 1318–1326, 2013.
