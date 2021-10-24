@@ -1,2 +1,3 @@
 *.sh
 logs
+__pycache__
