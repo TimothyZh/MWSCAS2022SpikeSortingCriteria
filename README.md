@@ -59,7 +59,7 @@ The parameters used for power consumption simulations are as follows:
 - ADC power: 10e-3W
 - ADC frequency: 10e6 Hz
 
-[2] C. Lammie, W. Xiang, B. Linares-Barranco, and M. R. Azghadi, “Memtorch: An Open-Source Simulation Framework for Memristive Deep Learning Systems,” CoRR, vol. abs/2004.10971, 2020. [Online]. Available: https://arxiv.org/abs/2004.10971
+[2] C. Lammie, W. Xiang, B. Linares-Barranco, and M. R. Azghadi, “MemTorch: An Open-source Simulation Framework for Memristive Deep Learning Systems,” Neurocomputing, 2022. [Online]. Available: https://www.sciencedirect.com/science/article/pii/S0925231222002053.
 
 [3] A. Amirsoleimani, “CODEX: Stochastic Encoding Method to Relax Resistive Crossbar Accelerator Design Requirements,” 2021.
 
