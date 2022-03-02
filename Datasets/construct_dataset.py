@@ -13,7 +13,9 @@ it is necessary to cite [1].
 “Realistic simulation of extracellular recordings,” Journal of Neuroscience Methods, 
 vol. 184, no. 2, pp. 285–293, Nov. 2009, doi: 10.1016/j.jneumeth.2009.08.017.
 
-[2] TBD.
+[2] T. Zhang, C. Lammie, Amirali Amirsoleimani, M. Ahmadi, Mostafa Rahimi Azghadi, and R. Genov,
+“Synthetic Simulations Of Extracellular Recordings (SSOER) Dataset,” Zenodo, 
+Mar. 2022, doi: 10.5281/zenodo.6214550.
 """
 
 
