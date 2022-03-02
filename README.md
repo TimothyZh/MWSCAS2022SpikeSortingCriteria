@@ -10,7 +10,7 @@ activities. The development of customized hardware implement- ing spike sorting 
 
 ## The Synthetic Simulations Of Extracellular Recordings (SSOER) Dataset
 The SSOER dataset is made publicly available under a Creative Commons Attribution 4.0 International Licence.
-The dataset can be downloaded from [here](TBD).
+The dataset can be downloaded from [here](https://doi.org/10.5281/zenodo.6214550).
 
 This dataset is comprised of two files: *data.npy* and *labels.csv*.
 
