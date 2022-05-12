@@ -1,3 +1,7 @@
 *.sh
 logs
 __pycache__
+*.npy
+*.csv
+Datasets/labels.csv
+Datasets/data.npy
