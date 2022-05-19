@@ -1,8 +1,8 @@
 # Toward A Formalized Approach for Spike Sorting Algorithms and Hardware Evaluation
 
-This repository contains the corresponding code, system- and circuit-level information, all simulated models, and detailed hardware evaluation results for the paper *Toward A Formalized Approach for Spike Sorting Algorithms and Hardware Evaluation.*
+This repository contains the corresponding code, system- and circuit-level information, all simulated models, and detailed hardware evaluation results for the paper *Toward A Formalized Approach for Spike Sorting Algorithms and Hardware Evaluation.*, which is openly accessible [here](https://arxiv.org/abs/2205.06514).
 
-Moreover, our synthetic dataset entitled ***The Synthetic Simulations Of Extracellular Recordings (SSOER)*** is made publicly available for download.
+Moreover, our synthetic dataset entitled ***The Synthetic Simulations Of Extracellular Recordings (SSOER)*** is made publicly available for download [here](https://zenodo.org/record/6214550).
 
 >
 > **Abstract:** _Spike sorting algorithms are used to separate extra-cellular recordings of neuronal populations into single-unit spike
@@ -10,7 +10,7 @@ activities. The development of customized hardware implement- ing spike sorting 
 
 ## The Synthetic Simulations Of Extracellular Recordings (SSOER) Dataset
 The SSOER dataset is made publicly available under a Creative Commons Attribution 4.0 International Licence.
-The dataset can be downloaded from [to be made available after peer review review]().
+The dataset can be downloaded from [https://zenodo.org/record/6214550](https://zenodo.org/record/6214550).
 
 This dataset is comprised of two files: *data.npy* and *labels.csv*.
 
